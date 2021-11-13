@@ -27,7 +27,8 @@ const InfoScreen = ({ onAccepted }: { onAccepted: () => void }) => {
     <ScreenWrapper styles={{ gap: 2 }}>
       <h1 sx={{ mt: 2 }}>WARNING</h1>
       <p>
-        This wallet is a work in progress. There could be errors and bugs.
+        This wallet is a work in progress. There could be errors and bugs. Use
+        at your own risk!
         <br />
         Please always make sure that you have your pass phrase backed up, so you
         can still access your funds even when this wallet may not work.

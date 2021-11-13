@@ -4,9 +4,17 @@
 
 A simple IOTA wallet for your browser (only available for Chrome right now).
 
+|                Unlock wallet                 |              Create new wallet               |
+| :------------------------------------------: | :------------------------------------------: |
+| ![Unlock wallet](./assets/unlock-wallet.png) | ![Create wallet](./assets/create-wallet.png) |
+
+|                Account view                |                   Transaction history                    |
+| :----------------------------------------: | :------------------------------------------------------: |
+| ![Account view](./assets/account-view.png) | ![Transaction history](./assets/transaction-history.png) |
+
 ## Warning
 
-This wallet is a work in progress. There could be errors and bugs.
+This wallet is a work in progress. There could be errors and bugs. Use at your own risk!
 
 Please always make sure that you have your pass phrase backed up, so you can still access your funds even when this wallet may not work.
 

@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
   "name": "IOTA Wallet",
-  "description": "A simple IOTA wallet for small transactions on the internet.",
+  "version": "0.0.2",
+  "description": "A simple IOTA wallet for your browser",
   "background": {
     "service_worker": "worker.bundle.js"
   },

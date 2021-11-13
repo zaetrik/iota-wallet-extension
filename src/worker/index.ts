@@ -1,19 +1,55 @@
-import { AES, enc } from 'crypto-js';
+import { AES, enc, lib, PBKDF2, algo } from 'crypto-js';
 
-const encrypt = (data: string, password: string): Promise<string> =>
-  new Promise((resolve) => {
-    const encrypted = AES.encrypt(data, password);
+const SALT_LENGTH = 16;
+const IV_LENGTH = 16;
 
-    resolve(encrypted.toString());
+const decrypt = (encryptedDataBase64: string, password: string): string => {
+  const encrypted = enc.Base64.parse(encryptedDataBase64);
+
+  const salt = lib.WordArray.create(encrypted.words.slice(0, SALT_LENGTH / 4));
+
+  const iv = lib.WordArray.create(
+    encrypted.words.slice(0 + SALT_LENGTH / 4, (SALT_LENGTH + IV_LENGTH) / 4)
+  );
+
+  const key = PBKDF2(password, salt, {
+    keySize: 256 / 32,
+    iterations: 10000,
+    hasher: algo.SHA256,
   });
 
-// Throws an error if the wrong password is used: 'Malformed UTF-8 data'
-const decrypt = (encryptedData: string, password: string): Promise<string> =>
-  new Promise((resolve) => {
-    const decrypted = AES.decrypt(encryptedData, password).toString(enc.Utf8);
+  const encryptedDataPart = lib.WordArray.create(
+    encrypted.words.slice((SALT_LENGTH + IV_LENGTH) / 4)
+  ).toString(enc.Base64);
 
-    resolve(decrypted);
+  const decrypted = AES.decrypt(encryptedDataPart, key, {
+    iv,
+  }).toString(enc.Utf8);
+
+  return decrypted;
+};
+
+const encrypt = (data: string, password: string): string => {
+  const salt = lib.WordArray.random(SALT_LENGTH);
+  const iv = lib.WordArray.random(IV_LENGTH);
+
+  const key = PBKDF2(password, salt, {
+    keySize: 256 / 32,
+    iterations: 10000,
+    hasher: algo.SHA256,
   });
+
+  const encryptedData = AES.encrypt(data, key, {
+    iv: iv,
+  }).ciphertext;
+
+  const encrypted = lib.WordArray.create()
+    .concat(salt)
+    .concat(iv)
+    .concat(encryptedData);
+
+  return encrypted.toString(enc.Base64);
+};
 
 type WorkerParams = {
   encryptedMnemonic?: string;
@@ -45,10 +81,7 @@ onmessage = async function (e) {
     if (!walletPassword) throw new Error('no wallet password set');
 
     if (type === 'unlockWallet' && encryptedMnemonic) {
-      const decryptedMnemonic = await decrypt(
-        encryptedMnemonic,
-        walletPassword
-      );
+      const decryptedMnemonic = decrypt(encryptedMnemonic, walletPassword);
 
       postMessage({
         type,
@@ -57,7 +90,7 @@ onmessage = async function (e) {
         ...rest,
       });
     } else if (type === 'createWallet' && mnemonic) {
-      const encryptedMnemonic = await encrypt(mnemonic, walletPassword);
+      const encryptedMnemonic = encrypt(mnemonic, walletPassword);
 
       postMessage({
         type,

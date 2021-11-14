@@ -44,7 +44,7 @@ export const getSeed = (mnemonic = createMnemonic()): Ed25519Seed => {
 };
 
 // Store node info in cache to prevent unnecessary request to the node.
-let nodeInfoCache = {} as INodeInfo;
+let nodeInfoCache = {} as INodeInfo & { nodeURL: string };
 
 /**
  * Fetch the node info.
@@ -52,10 +52,10 @@ let nodeInfoCache = {} as INodeInfo;
 const getNodeInfo = async (node = API_ENDPOINT): Promise<INodeInfo> => {
   const client = new SingleNodeClient(node);
 
-  return nodeInfoCache.bech32HRP
+  return nodeInfoCache.bech32HRP && nodeInfoCache.nodeURL === node
     ? nodeInfoCache
     : client.info().then((info) => {
-        nodeInfoCache = info;
+        nodeInfoCache = { ...info, nodeURL: node };
         return info;
       });
 };

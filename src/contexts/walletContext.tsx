@@ -247,7 +247,6 @@ export const WalletContextProvider = ({
                 setTransactionHistory(transactions);
                 setMnemonic(decryptedMnemonic);
                 setWalletName(walletName);
-                setWorkerLoading(false);
               })
               .ifLeft(setError)
               .run()
@@ -260,7 +259,7 @@ export const WalletContextProvider = ({
           break;
       }
     };
-  }, [worker]);
+  }, [worker, node]);
 
   return (
     <WalletContext.Provider

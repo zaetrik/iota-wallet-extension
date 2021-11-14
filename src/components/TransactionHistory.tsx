@@ -71,7 +71,7 @@ const Transaction = ({ transaction }: { transaction: Transaction }) => {
         })
         .run();
     }
-  }, []);
+  }, [node]);
 
   const incomingTransaction = address === transaction.toAddress;
 

@@ -58,9 +58,8 @@ const Transaction = ({ transaction }: { transaction: Transaction }) => {
   const { address, updateTransactionHistory } = useWalletContext();
 
   useEffect(() => {
-    // If we have missing transaction meta data try to fetch it again.
-    // This is the case for all send transactions.
-    if (!transaction.ledgerInclusionState) {
+    // If we don't have the final transaction meta data try to fetch it again.
+    if (transaction.ledgerInclusionState === 'pending') {
       EitherAsync(() => getMessageMetaData(transaction.messageId, node))
         .ifRight((messageMetaData) => {
           return updateTransactionHistory(
@@ -108,7 +107,8 @@ const Transaction = ({ transaction }: { transaction: Transaction }) => {
               backgroundColor:
                 transaction.ledgerInclusionState === 'conflicting'
                   ? 'yellow'
-                  : transaction.ledgerInclusionState === 'noTransaction'
+                  : transaction.ledgerInclusionState === 'noTransaction' ||
+                    transaction.ledgerInclusionState === 'pending'
                   ? 'black'
                   : 'mint',
             }}

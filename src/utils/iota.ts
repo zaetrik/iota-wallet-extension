@@ -228,7 +228,7 @@ export type Transaction = {
   toAddress: string;
   amount: number;
   messageId: string;
-  ledgerInclusionState?: LedgerInclusionState;
+  ledgerInclusionState: LedgerInclusionState | 'pending';
 };
 
 /**
@@ -292,7 +292,7 @@ export const getTransactionData = async (
           toAddress: address,
           amount: payload.essence.outputs[i].amount,
           messageId,
-          ledgerInclusionState,
+          ledgerInclusionState: ledgerInclusionState ?? 'pending',
         },
       ];
     },

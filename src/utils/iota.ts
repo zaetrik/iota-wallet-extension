@@ -319,3 +319,21 @@ export const getTransactionForAddress = (
         WalletError.UNABLE_TO_GET_TRANSACTION_DATA_RELATED_TO_CURRENT_ADDRESS
       );
 };
+
+/**
+ * Check if current node is connected to the dev net.
+ */
+export const isDevNet = async (node = API_ENDPOINT): Promise<boolean> => {
+  const { bech32HRP } = await getNodeInfo(node);
+
+  return bech32HRP === 'atoi';
+};
+
+/**
+ * Get the human readable part of bech32 addresses for the current node.
+ */
+export const getBech32HRP = async (node = API_ENDPOINT): Promise<string> => {
+  const { bech32HRP } = await getNodeInfo(node);
+
+  return bech32HRP;
+};

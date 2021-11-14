@@ -2,10 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { useWalletContext } from '../contexts/walletContext';
-import { getMessageMetaData, Transaction } from '../utils/iota';
+import {
+  getBech32HRP,
+  getMessageMetaData,
+  isDevNet as checkIfDevNet,
+  Transaction,
+} from '../utils/iota';
 import { useSettingsContext } from '../contexts/settingsContext';
 import { EitherAsync } from 'purify-ts';
 import { accountNameStyles } from './AccountView';
+import useLoadable from '../utils/useLoadable';
+import { fold3 } from '@devexperts/remote-data-ts';
 
 // Compoents
 import Button from './Button';
@@ -17,18 +24,23 @@ import NavBarWrapper from './NavBarWrapper';
 import Error from './Error';
 import Badge from './Badge';
 
+type TransactionAddressProps = {
+  type: 'from' | 'to';
+  address: string;
+  isDevNet: boolean;
+};
 const TransactionAddress = ({
   type,
   address,
-}: {
-  type: 'from' | 'to';
-  address: string;
-}) => {
+  isDevNet,
+}: TransactionAddressProps) => {
   return (
     <div sx={{ display: 'flex', flexFlow: 'column', gap: 1 }}>
       <p sx={{ variant: 'text.subheading', fontWeight: 'regular' }}>{type}:</p>
       <a
-        href={`https://explorer.iota.org/mainnet/addr/${address}`}
+        href={`https://explorer.iota.org/${
+          isDevNet ? 'devnet' : 'mainnet'
+        }/addr/${address}`}
         target="_blank"
         sx={{ wordBreak: 'break-word' }}
       >
@@ -38,12 +50,18 @@ const TransactionAddress = ({
   );
 };
 
-const TransactionMessage = ({ messageId }: { messageId: string }) => {
+type TransactionMessageProps = { messageId: string; isDevNet: boolean };
+const TransactionMessage = ({
+  messageId,
+  isDevNet,
+}: TransactionMessageProps) => {
   return (
     <div sx={{ display: 'flex', flexFlow: 'column', gap: 1 }}>
       <p sx={{ variant: 'text.subheading', fontWeight: 'regular' }}>Message:</p>
       <a
-        href={`https://explorer.iota.org/mainnet/message/${messageId}`}
+        href={`https://explorer.iota.org/${
+          isDevNet ? 'devnet' : 'mainnet'
+        }/message/${messageId}`}
         target="_blank"
         sx={{ wordBreak: 'break-word' }}
       >
@@ -53,7 +71,11 @@ const TransactionMessage = ({ messageId }: { messageId: string }) => {
   );
 };
 
-const Transaction = ({ transaction }: { transaction: Transaction }) => {
+type TransactionProps = {
+  transaction: Transaction;
+  isDevNet: boolean;
+};
+const Transaction = ({ transaction, isDevNet }: TransactionProps) => {
   const { node } = useSettingsContext();
   const { address, updateTransactionHistory } = useWalletContext();
 
@@ -86,19 +108,23 @@ const Transaction = ({ transaction }: { transaction: Transaction }) => {
       }}
     >
       <TransactionAddress
+        isDevNet={isDevNet}
         type={incomingTransaction ? 'from' : 'to'}
         address={
           incomingTransaction ? transaction.fromAddress : transaction.toAddress
         }
       />
 
-      <TransactionMessage messageId={transaction.messageId} />
+      <TransactionMessage
+        messageId={transaction.messageId}
+        isDevNet={isDevNet}
+      />
 
       <div sx={{ display: 'flex', gap: 2 }}>
         <Badge
           styles={{ backgroundColor: incomingTransaction ? 'mint' : 'red' }}
         >
-          {incomingTransaction ? '+' : '-'}
+          {incomingTransaction ? '+ ' : '- '}
           {(transaction.amount / 1000000).toFixed(2)} Mi
         </Badge>
 
@@ -123,7 +149,10 @@ const Transaction = ({ transaction }: { transaction: Transaction }) => {
 };
 
 const OpenHistory = ({ onClose }: { onClose: () => void }) => {
+  const { node } = useSettingsContext();
   const { transactionHistory, error, walletName } = useWalletContext();
+  const [isDevNet] = useLoadable(() => checkIfDevNet(node));
+  const [bech32HRP] = useLoadable(() => getBech32HRP(node));
 
   return (
     <Screen>
@@ -138,9 +167,32 @@ const OpenHistory = ({ onClose }: { onClose: () => void }) => {
       <h1>Transaction history</h1>
       <div sx={{ overflow: 'auto' }}>
         {transactionHistory.length === 0 && <p>Nothing here yet</p>}
-        {transactionHistory.map((t) => (
-          <Transaction key={t.messageId} transaction={t} />
-        ))}
+        {fold3<Error, boolean, JSX.Element>(
+          () => <p>Loading...</p>,
+          () => <Error error="Unable to get transaction history" />,
+          (d) =>
+            fold3<Error, string, JSX.Element>(
+              () => <p>Loading...</p>,
+              () => <Error error="Unable to get transaction history" />,
+              (hrp) => (
+                <>
+                  {transactionHistory
+                    .filter(
+                      (t) =>
+                        t.fromAddress.startsWith(hrp) &&
+                        t.toAddress.startsWith(hrp)
+                    )
+                    .map((t) => (
+                      <Transaction
+                        key={t.messageId}
+                        transaction={t}
+                        isDevNet={d}
+                      />
+                    ))}
+                </>
+              )
+            )(bech32HRP)
+        )(isDevNet)}
       </div>
     </Screen>
   );

@@ -35,7 +35,7 @@ type TransferProps = {
 const Transfer = ({ mnemonic, styles = {} }: TransferProps) => {
   const { node } = useSettingsContext();
   const {
-    balance,
+    balance = 0,
     updateTransactionHistory,
     address: walletAddress,
   } = useWalletContext();
@@ -146,7 +146,7 @@ const Transfer = ({ mnemonic, styles = {} }: TransferProps) => {
           }
         }}
       />
-      <label>Amount in Mi</label>
+      <label>Amount in Miota</label>
       <input
         type="text"
         value={transferAmount}

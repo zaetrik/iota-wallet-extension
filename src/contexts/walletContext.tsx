@@ -47,7 +47,7 @@ type WalletContextType = {
   error?: WalletError;
   walletName?: string;
   transactionHistory: Transaction[];
-  balance: number;
+  balance?: number;
   address?: string;
   workerLoading: boolean;
 };
@@ -65,7 +65,7 @@ const WalletContext = createContext<WalletContextType>({
   walletName: undefined,
   error: undefined,
   transactionHistory: [],
-  balance: 0,
+  balance: undefined,
   workerLoading: false,
 });
 
@@ -83,7 +83,7 @@ export const WalletContextProvider = ({
   const [mnemonic, setMnemonic] = useState<undefined | string>(undefined);
   const [walletName, setWalletName] = useState<undefined | string>(undefined);
   const [address, setAddress] = useState<string | undefined>(undefined);
-  const [balance, setBalance] = useState<number>(0);
+  const [balance, setBalance] = useState<number | undefined>(undefined);
   const [transactionHistory, setTransactionHistory] = useState<Transaction[]>(
     []
   );
@@ -93,7 +93,7 @@ export const WalletContextProvider = ({
     setWalletName(undefined);
     setMnemonic(undefined);
     setTransactionHistory([]);
-    setBalance(0);
+    setBalance(undefined);
     setAddress(undefined);
   };
 

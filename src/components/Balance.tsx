@@ -60,20 +60,20 @@ const Balance = ({ mnemonic }: { mnemonic: string }) => {
       >
         {fold3<Error, number, JSX.Element>(
           () =>
-            balance ? (
+            balance || balance === 0 ? (
               <IOTABalance balance={balance} />
             ) : (
               <p sx={{ fontSize: 4, lineHeight: 3 }}>Loading balance...</p>
             ),
           () =>
-            balance ? (
+            balance || balance === 0 ? (
               <IOTABalance balance={balance} />
             ) : (
               <p sx={{ fontSize: 4, lineHeight: 3 }}>
                 Could not fetch your balance!
               </p>
             ),
-          (b) => <IOTABalance balance={balance} />
+          (b) => <IOTABalance balance={b} />
         )(balanceRequest)}
         <Button
           styles={{

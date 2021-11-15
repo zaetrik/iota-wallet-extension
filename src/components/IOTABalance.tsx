@@ -23,7 +23,7 @@ const IOTABalance = ({
       onClick={() => setIOTAUnit(getNextUnitLevel(iotaUnit))}
     >
       {iotasToUnit(balance, iotaUnit).toLocaleString(undefined, {
-        maximumFractionDigits: 20,
+        maximumFractionDigits: 4,
       })}{' '}
       {getUnitShorthandNotation(iotaUnit)}
     </p>

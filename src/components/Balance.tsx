@@ -55,6 +55,7 @@ const Balance = ({ mnemonic }: { mnemonic: string }) => {
           width: '100%',
           alignContent: 'center',
           justifyContent: 'space-between',
+          gap: 4,
         }}
       >
         {fold3<Error, number, JSX.Element>(

@@ -11,7 +11,7 @@ export const colors = {
   mint: '#B3E3AB',
   red: '#FF7081',
   orange: '#FBBB97',
-  grey: 'rgba(0, 0, 0, 0.38)',
+  grey: 'rgba(0, 0, 0, 0.26)',
 };
 
 const theme = makeTheme({
@@ -24,7 +24,7 @@ const theme = makeTheme({
     robotoMono:
       'Roboto Mono, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", monospace',
   },
-  fontSizes: [12, 14, 16, 18, 20, 40],
+  fontSizes: [12, 14, 16, 18, 20, 38],
   fontWeights: {
     thin: 100,
     light: 300,

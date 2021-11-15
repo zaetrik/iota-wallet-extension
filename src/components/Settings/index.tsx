@@ -23,8 +23,7 @@ const ClosedSettings = ({ onOpen }: { onOpen: () => void }) => {
       styles={{
         backgroundColor: 'transparent',
         p: 0,
-        path: { fill: 'black', stroke: 'black' },
-        svg: { height: 50, width: 50 },
+        path: { fill: 'black', stroke: 'black', strokeWidth: 0.4 },
       }}
     >
       <SettingsIcon />

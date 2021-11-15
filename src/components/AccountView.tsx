@@ -17,7 +17,7 @@ const AccountView = ({ mnemonic }: { mnemonic: string }) => {
   return (
     <ScreenWrapper styles={{ gap: 3 }}>
       <NavBarWrapper onClose={logout}>
-        <div sx={{ display: 'flex', gap: 1 }}>
+        <div sx={{ display: 'flex', gap: 2 }}>
           <TransactionHistory />
           <Settings />
         </div>

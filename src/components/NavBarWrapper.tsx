@@ -8,7 +8,7 @@ import { useWalletContext } from '../contexts/walletContext';
 import GoBack from './Button/GoBack';
 
 export const accountNameStyles: ThemeUICSSObject = {
-  maxWidth: '11ch',
+  maxWidth: '16ch',
   lineHeight: 2.5,
   wordBreak: 'break-word',
   textOverflow: 'ellipsis',

@@ -44,7 +44,7 @@ export const getSeed = (mnemonic = createMnemonic()): Ed25519Seed => {
 };
 
 // Store node info in cache to prevent unnecessary request to the node.
-let nodeInfoCache = {} as INodeInfo;
+let nodeInfoCache = {} as INodeInfo & { nodeURL: string };
 
 /**
  * Fetch the node info.
@@ -52,10 +52,10 @@ let nodeInfoCache = {} as INodeInfo;
 const getNodeInfo = async (node = API_ENDPOINT): Promise<INodeInfo> => {
   const client = new SingleNodeClient(node);
 
-  return nodeInfoCache.bech32HRP
+  return nodeInfoCache.bech32HRP && nodeInfoCache.nodeURL === node
     ? nodeInfoCache
     : client.info().then((info) => {
-        nodeInfoCache = info;
+        nodeInfoCache = { ...info, nodeURL: node };
         return info;
       });
 };
@@ -228,7 +228,7 @@ export type Transaction = {
   toAddress: string;
   amount: number;
   messageId: string;
-  ledgerInclusionState?: LedgerInclusionState;
+  ledgerInclusionState: LedgerInclusionState | 'pending';
 };
 
 /**
@@ -292,7 +292,7 @@ export const getTransactionData = async (
           toAddress: address,
           amount: payload.essence.outputs[i].amount,
           messageId,
-          ledgerInclusionState,
+          ledgerInclusionState: ledgerInclusionState ?? 'pending',
         },
       ];
     },
@@ -318,4 +318,72 @@ export const getTransactionForAddress = (
     : Left(
         WalletError.UNABLE_TO_GET_TRANSACTION_DATA_RELATED_TO_CURRENT_ADDRESS
       );
+};
+
+/**
+ * Check if current node is connected to the dev net.
+ */
+export const isDevNet = async (node = API_ENDPOINT): Promise<boolean> => {
+  const { bech32HRP } = await getNodeInfo(node);
+
+  return bech32HRP === 'atoi';
+};
+
+/**
+ * Get the human readable part of bech32 addresses for the current node.
+ */
+export const getBech32HRP = async (node = API_ENDPOINT): Promise<string> => {
+  const { bech32HRP } = await getNodeInfo(node);
+
+  return bech32HRP;
+};
+
+export enum IOTAUnit {
+  IOTA = 1,
+  KIOTA = 1000,
+  MIOTA = 1000000,
+  GIOTA = 1000000000,
+  TIOTA = 1000000000000,
+  PIOTA = 1000000000000000,
+}
+
+export const getUnitShorthandNotation = (iotaUnit: IOTAUnit): string => {
+  switch (iotaUnit) {
+    case IOTAUnit.IOTA:
+      return 'i';
+    case IOTAUnit.KIOTA:
+      return 'Ki';
+    case IOTAUnit.MIOTA:
+      return 'Mi';
+    case IOTAUnit.GIOTA:
+      return 'Gi';
+    case IOTAUnit.TIOTA:
+      return 'Ti';
+    case IOTAUnit.PIOTA:
+      return 'Pi';
+  }
+};
+
+export const iotasToUnit = (iotaAmount: number, iotaUnit: IOTAUnit): number => {
+  return iotaAmount / iotaUnit;
+};
+
+export const getNextUnitLevel = (iotaUnit: IOTAUnit) => {
+  switch (iotaUnit) {
+    case IOTAUnit.IOTA:
+      return IOTAUnit.KIOTA;
+    case IOTAUnit.KIOTA:
+      return IOTAUnit.MIOTA;
+    case IOTAUnit.MIOTA:
+      return IOTAUnit.GIOTA;
+    case IOTAUnit.GIOTA:
+      return IOTAUnit.TIOTA;
+    case IOTAUnit.TIOTA:
+      return IOTAUnit.PIOTA;
+    case IOTAUnit.PIOTA:
+      return IOTAUnit.IOTA;
+
+    default:
+      return IOTAUnit.MIOTA;
+  }
 };

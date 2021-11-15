@@ -15,6 +15,7 @@ const ChevronButton = <T extends 'link' | 'button'>({
       buttonType={buttonType ?? 'button'}
       styles={{
         ':hover': {
+          color: 'whiteLight',
           svg: { transform: 'translateX(5px)', transition: '0.5s ease' },
           path: { fill: 'whiteLight' },
         },

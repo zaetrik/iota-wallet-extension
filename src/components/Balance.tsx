@@ -15,6 +15,7 @@ import { useWalletContext } from '../contexts/walletContext';
 // Components
 import Button from './Button';
 import Reload from './icons/Reload';
+import IOTABalance from './IOTABalance';
 
 const spinAnimation = keyframes({
   from: { transform: 'rotate(0deg)' },
@@ -25,52 +26,72 @@ const Balance = ({ mnemonic }: { mnemonic: string }) => {
   if (!mnemonic) return <></>;
 
   const { node } = useSettingsContext();
-  const [balance, fetch] = useLoadable(() =>
+  const [balanceRequest, fetch] = useLoadable(() =>
     getBalance(getSeed(mnemonic), node)
   );
-  const { updateBalance } = useWalletContext();
+  const { updateBalance, balance } = useWalletContext();
 
   useEffect(() => fetch(), [node]);
 
   useEffect(() => {
-    if (isSuccess(balance)) {
-      updateBalance(balance.value);
+    if (isSuccess(balanceRequest)) {
+      updateBalance(balanceRequest.value);
     }
 
     const interval = setInterval(() => {
-      if (!isPending(balance)) {
+      if (!isPending(balanceRequest)) {
         fetch();
       }
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [mnemonic, balance]);
+  }, [mnemonic, balanceRequest]);
 
   return (
     <div sx={{ display: 'flex', gap: 1, flexFlow: 'column' }}>
       <div
         sx={{
           display: 'flex',
-          gap: 1,
           width: '100%',
           alignContent: 'center',
+          justifyContent: 'space-between',
+          gap: 4,
         }}
       >
-        <h1>Balance</h1>
+        {fold3<Error, number, JSX.Element>(
+          () =>
+            balance || balance === 0 ? (
+              <IOTABalance balance={balance} />
+            ) : (
+              <p sx={{ fontSize: 4, lineHeight: 3 }}>Loading balance...</p>
+            ),
+          () =>
+            balance || balance === 0 ? (
+              <IOTABalance balance={balance} />
+            ) : (
+              <p sx={{ fontSize: 4, lineHeight: 3 }}>
+                Could not fetch your balance!
+              </p>
+            ),
+          (b) => <IOTABalance balance={b} />
+        )(balanceRequest)}
         <Button
           styles={{
             backgroundColor: 'transparent',
             p: 0,
-            ...(isPending(balance) ? { ':hover': { cursor: 'default' } } : {}),
+            ...(isPending(balanceRequest)
+              ? { ':hover': { cursor: 'default' } }
+              : {}),
           }}
           onClick={() => {
-            if (!isPending(balance) && !isInitial(balance)) fetch();
+            if (!isPending(balanceRequest) && !isInitial(balanceRequest))
+              fetch();
           }}
         >
           <Reload
             styles={{
               path: { fill: 'black' },
-              ...(isPending(balance)
+              ...(isPending(balanceRequest)
                 ? {
                     animation: `${spinAnimation} 1.5s infinite`,
                   }
@@ -79,12 +100,6 @@ const Balance = ({ mnemonic }: { mnemonic: string }) => {
           />
         </Button>
       </div>
-
-      {fold3<Error, number, JSX.Element>(
-        () => <p sx={{ fontSize: 3 }}>Loading balance...</p>,
-        () => <p sx={{ fontSize: 3 }}>Could not fetch your balance!</p>,
-        (b) => <p sx={{ fontSize: 3 }}>{b / 1000000} Mi</p>
-      )(balance)}
     </div>
   );
 };

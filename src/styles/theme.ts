@@ -7,10 +7,11 @@ export const colors = {
   blackLight: 'rgba(12, 12, 12, 0.65)',
   white: '#ffffff',
   whiteLight: 'rgba(255, 255, 255, 0.9)',
-  primary: '#00043a',
-  mint: '#2ec4b6',
-  red: '#f94144',
-  yellow: '#f8961e',
+  primary: '#0c0c0c',
+  mint: '#B3E3AB',
+  red: '#FF7081',
+  orange: '#FBBB97',
+  grey: 'rgba(0, 0, 0, 0.38)',
 };
 
 const theme = makeTheme({
@@ -20,9 +21,13 @@ const theme = makeTheme({
       'Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif',
     robotoCondensed:
       'Roboto Condensed, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif',
+    robotoMono:
+      'Roboto Mono, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", monospace',
   },
-  fontSizes: [12, 14, 16, 18, 20],
+  fontSizes: [12, 14, 16, 18, 20, 40],
   fontWeights: {
+    thin: 100,
+    light: 300,
     regular: 400,
     medium: 500,
     bold: 700,
@@ -35,9 +40,9 @@ const theme = makeTheme({
   colors,
   text: {
     heading: {
-      fontFamily: 'roboto',
+      fontFamily: 'robotoMono',
       fontSize: 4,
-      fontWeight: 'regular',
+      fontWeight: 'light',
       lineHeight: 'heading',
     },
     subheading: {
@@ -48,20 +53,20 @@ const theme = makeTheme({
       lineHeight: 'heading',
     },
     label: {
-      fontFamily: 'roboto',
+      fontFamily: 'robotoCondensed',
       fontSize: 0,
       fontWeight: 'regular',
       textTransform: 'uppercase',
       lineHeight: 'heading',
     },
     body: {
-      fontFamily: 'roboto',
+      fontFamily: 'robotoMono',
       fontSize: 2,
+      fontWeight: 'regular',
       lineHeight: 'large',
-      fontWeight: 'body',
     },
     link: {
-      fontFamily: 'robotoCondensed',
+      fontFamily: 'robotoMono',
       fontSize: 1,
     },
   },
@@ -96,8 +101,12 @@ const theme = makeTheme({
         color: 'white',
         p: 4,
       },
+      h1: {
+        variant: 'text.heading',
+      },
       a: {
         variant: 'text.link',
+        color: 'black',
       },
       p: {
         variant: 'text.body',

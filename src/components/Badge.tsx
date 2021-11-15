@@ -16,9 +16,11 @@ const Badge = ({
         width: 'fit-content',
         py: 1,
         px: 2,
+        textAlign: 'center',
         borderRadius: '5px',
+        height: 'min-content',
+        fontSize: 0,
         color: 'white',
-        textTransform: 'uppercase',
         ...styles,
       }}
     >

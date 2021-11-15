@@ -14,6 +14,7 @@ import { ThemeUICSSObject } from '@theme-ui/css';
 import { EitherAsync } from 'purify-ts';
 import { useState } from 'react';
 import {
+  getBech32HRP,
   getSeed,
   isBech32,
   sendTransfer,
@@ -46,7 +47,13 @@ const Transfer = ({ mnemonic, styles = {} }: TransferProps) => {
 
   const send = () => {
     if (!isBech32(address)) {
-      setHelpText("Please enter a valid address starting with 'iota1'");
+      EitherAsync(() => getBech32HRP(node))
+        .ifRight((hrp) =>
+          setHelpText(`Please enter a valid address starting with '${hrp}'`)
+        )
+        .ifLeft(() => setHelpText('Please enter a valid address'))
+        .run();
+
       return;
     }
 
@@ -60,7 +67,7 @@ const Transfer = ({ mnemonic, styles = {} }: TransferProps) => {
       return;
     }
 
-    if (balance <= 0) {
+    if (parseFloat(transferAmount) <= 0) {
       setHelpText('Amount must be greater than 0');
       return;
     }
@@ -155,7 +162,15 @@ const Transfer = ({ mnemonic, styles = {} }: TransferProps) => {
         () => <Button>Sending transfer...</Button>,
         () => {
           setTimeout(() => setTransfer(initial), 2500);
-          return <Button>Could not send transfer! Please try again</Button>;
+          return (
+            <Button
+              styles={{
+                backgroundColor: 'red',
+              }}
+            >
+              Could not send transfer!
+            </Button>
+          );
         },
         () => {
           setTimeout(() => setTransfer(initial), 2500);

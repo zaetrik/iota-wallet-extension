@@ -5,7 +5,6 @@ import { useWalletContext } from '../../contexts/walletContext';
 import { useSettingsContext } from '../../contexts/settingsContext';
 
 // Components
-import GoBack from '../Button/GoBack';
 import Button from '../Button';
 import Trash from '../icons/Trash';
 import SettingsIcon from '../icons/Settings';
@@ -15,6 +14,7 @@ import NodeSettings from './NodeSettings';
 import Error from '../Error';
 import ChevronButton from '../Button/ChevronButton';
 import CopyToClipBoard from '../Button/CopyToClipboard';
+import NavBarWrapper from '../NavBarWrapper';
 
 const ClosedSettings = ({ onOpen }: { onOpen: () => void }) => {
   return (
@@ -46,9 +46,9 @@ const OpenSettings = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <Screen>
-      <GoBack onClick={onClose} styles={{ pt: 2 }} />
+      <NavBarWrapper onClose={onClose} />
       <Error error={error} />
-      <h1>Settings</h1>
+
       <ChevronButton onClick={() => setShowNodeSettings(true)}>
         Change node
       </ChevronButton>
@@ -86,18 +86,20 @@ const OpenSettings = ({ onClose }: { onClose: () => void }) => {
       >
         GitHub repository
       </ChevronButton>
-      <div sx={{ wordBreak: 'break-word', mt: 4 }}>
-        <p>
-          If you like this wallet, please consider donating to the following
-          IOTA address :)
-        </p>
-        <div sx={{ mt: 2, display: 'flex', gap: 2 }}>
+      {!showDeleteWallet && !showNodeSettings && (
+        <div sx={{ wordBreak: 'break-word', mt: 4, pb: 4 }}>
           <p>
-            <b>{donationAddress}</b>
+            If you like this wallet, please consider donating to the following
+            IOTA address :)
           </p>
-          <CopyToClipBoard text={donationAddress} />
+          <div sx={{ mt: 2, display: 'flex', gap: 2 }}>
+            <p>
+              <b>{donationAddress}</b>
+            </p>
+            <CopyToClipBoard text={donationAddress} />
+          </div>
         </div>
-      </div>
+      )}
     </Screen>
   );
 };

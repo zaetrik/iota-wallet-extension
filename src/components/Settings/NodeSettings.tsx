@@ -5,7 +5,7 @@ import { useSettingsContext } from '../../contexts/settingsContext';
 
 // Components
 import Button from '../Button';
-import GoBack from '../Button/GoBack';
+import NavBarWrapper from '../NavBarWrapper';
 import Screen from '../Screen/Screen';
 
 const NodeSettings = ({ onClose }: { onClose: () => void }) => {
@@ -15,7 +15,7 @@ const NodeSettings = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <Screen>
-      <GoBack onClick={onClose} styles={{ pt: 2 }} />
+      <NavBarWrapper onClose={onClose} />
       <h1>Set your node</h1>
       <input
         type="text"

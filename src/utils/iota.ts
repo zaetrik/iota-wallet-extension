@@ -337,3 +337,53 @@ export const getBech32HRP = async (node = API_ENDPOINT): Promise<string> => {
 
   return bech32HRP;
 };
+
+export enum IOTAUnit {
+  IOTA = 1,
+  KIOTA = 1000,
+  MIOTA = 1000000,
+  GIOTA = 1000000000,
+  TIOTA = 1000000000000,
+  PIOTA = 1000000000000000,
+}
+
+export const getUnitShorthandNotation = (iotaUnit: IOTAUnit): string => {
+  switch (iotaUnit) {
+    case IOTAUnit.IOTA:
+      return 'i';
+    case IOTAUnit.KIOTA:
+      return 'Ki';
+    case IOTAUnit.MIOTA:
+      return 'Mi';
+    case IOTAUnit.GIOTA:
+      return 'Gi';
+    case IOTAUnit.TIOTA:
+      return 'Ti';
+    case IOTAUnit.PIOTA:
+      return 'Pi';
+  }
+};
+
+export const iotasToUnit = (iotaAmount: number, iotaUnit: IOTAUnit): number => {
+  return iotaAmount / iotaUnit;
+};
+
+export const getNextUnitLevel = (iotaUnit: IOTAUnit) => {
+  switch (iotaUnit) {
+    case IOTAUnit.IOTA:
+      return IOTAUnit.KIOTA;
+    case IOTAUnit.KIOTA:
+      return IOTAUnit.MIOTA;
+    case IOTAUnit.MIOTA:
+      return IOTAUnit.GIOTA;
+    case IOTAUnit.GIOTA:
+      return IOTAUnit.TIOTA;
+    case IOTAUnit.TIOTA:
+      return IOTAUnit.PIOTA;
+    case IOTAUnit.PIOTA:
+      return IOTAUnit.IOTA;
+
+    default:
+      return IOTAUnit.MIOTA;
+  }
+};

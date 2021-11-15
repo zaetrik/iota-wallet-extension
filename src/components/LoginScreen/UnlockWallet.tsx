@@ -7,7 +7,7 @@ import { useWalletContext } from '../../contexts/walletContext';
 import Button from '../Button';
 import ChevronButton from '../Button/ChevronButton';
 import Error from '../Error';
-import NavBarWrapper from '../NavBarWrapper';
+import NavBarWrapper, { accountNameStyles } from '../NavBarWrapper';
 import Settings from '../Settings';
 
 type UnlockWalletProps = {
@@ -25,11 +25,11 @@ const UnlockWallet = ({
   return (
     <>
       <NavBarWrapper>
-        <h1 sx={{ lineHeight: 2, color: 'mint' }}>IOTA Wallet</h1>
+        <h1 sx={accountNameStyles}>IOTA Wallet</h1>
         <Settings />
       </NavBarWrapper>
       <Error error={error} />
-      <label>Wallets</label>
+      <label>Wallet</label>
       <select
         value={walletName}
         onChange={(e) => setWalletName(String(e.currentTarget.value))}
@@ -40,7 +40,7 @@ const UnlockWallet = ({
           </option>
         ))}
       </select>
-      <label>Wallet Password</label>
+      <label>Password</label>
       <input
         type="password"
         value={walletPassword}

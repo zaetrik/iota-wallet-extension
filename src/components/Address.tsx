@@ -25,17 +25,20 @@ const Address = ({ mnemonic }: { mnemonic: string }) => {
   useEffect(() => fetch(), [node]);
 
   return (
-    <div>
-      <div sx={{ display: 'flex', gap: 1 }}>
-        <h1>Address</h1>
-        {isSuccess(address) && <CopyToClipBoard text={address.value} />}
-      </div>
-
+    <div
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignContent: 'center',
+        gap: 4,
+      }}
+    >
       {fold3<Error, string | Uint8Array, JSX.Element>(
-        () => <p sx={{ fontSize: 3 }}>Loading...</p>,
-        () => <p sx={{ fontSize: 3 }}>Could not fetch address</p>,
-        (a) => <p sx={{ wordBreak: 'break-word', fontSize: 3 }}>{a}</p>
+        () => <p sx={{ fontSize: 1 }}>Loading...</p>,
+        () => <p sx={{ fontSize: 1 }}>Could not fetch address</p>,
+        (a) => <p sx={{ wordBreak: 'break-word', fontSize: 1 }}>{a}</p>
       )(address)}
+      {isSuccess(address) && <CopyToClipBoard text={address.value} />}
     </div>
   );
 };

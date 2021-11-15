@@ -10,14 +10,14 @@ import { fold3 } from '@devexperts/remote-data-ts';
 import AccountView from './AccountView';
 import LoginScreen from './LoginScreen';
 import Error from './Error';
-import InfoScreen from './InfoScreen';
+import WarningScreen from './WarningScreen';
 
 const wrapperStyles: ThemeUICSSObject = {
   px: 4,
   pb: 4,
   pt: 2,
   borderRadius: 20,
-  minWidth: 350,
+  minWidth: 375,
   display: 'flex',
   flexFlow: 'column',
   position: 'relative',
@@ -46,7 +46,7 @@ const Popup = () => {
               </>
             );
           } else {
-            return <InfoScreen onAccepted={fetchStatus} />;
+            return <WarningScreen onAccepted={fetchStatus} />;
           }
         }
       )(userAcceptedWarningMessage)}

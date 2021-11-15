@@ -10,19 +10,18 @@ import {
 } from '../utils/iota';
 import { useSettingsContext } from '../contexts/settingsContext';
 import { EitherAsync } from 'purify-ts';
-import { accountNameStyles } from './AccountView';
 import useLoadable from '../utils/useLoadable';
 import { fold3 } from '@devexperts/remote-data-ts';
 
 // Compoents
 import Button from './Button';
 import History from './icons/History';
-import GoBack from './Button/GoBack';
 import Screen from './Screen/Screen';
 import Settings from './Settings';
 import NavBarWrapper from './NavBarWrapper';
 import Error from './Error';
 import Badge from './Badge';
+import IOTABalance from './IOTABalance';
 
 type TransactionAddressProps = {
   type: 'from' | 'to';
@@ -35,8 +34,17 @@ const TransactionAddress = ({
   isDevNet,
 }: TransactionAddressProps) => {
   return (
-    <div sx={{ display: 'flex', flexFlow: 'column', gap: 1 }}>
-      <p sx={{ variant: 'text.subheading', fontWeight: 'regular' }}>{type}:</p>
+    <div sx={{ display: 'flex', gap: 2 }}>
+      <Badge
+        styles={{
+          backgroundColor: 'grey',
+          textTransform: 'uppercase',
+          minWidth: '8ch',
+          px: 0,
+        }}
+      >
+        {type}
+      </Badge>
       <a
         href={`https://explorer.iota.org/${
           isDevNet ? 'devnet' : 'mainnet'
@@ -56,8 +64,16 @@ const TransactionMessage = ({
   isDevNet,
 }: TransactionMessageProps) => {
   return (
-    <div sx={{ display: 'flex', flexFlow: 'column', gap: 1 }}>
-      <p sx={{ variant: 'text.subheading', fontWeight: 'regular' }}>Message:</p>
+    <div sx={{ display: 'flex', gap: 2 }}>
+      <Badge
+        styles={{
+          backgroundColor: 'grey',
+          minWidth: '8ch',
+          px: 0,
+        }}
+      >
+        MSG
+      </Badge>
       <a
         href={`https://explorer.iota.org/${
           isDevNet ? 'devnet' : 'mainnet'
@@ -99,13 +115,44 @@ const Transaction = ({ transaction, isDevNet }: TransactionProps) => {
   return (
     <div
       sx={{
-        p: 2,
+        py: 2,
+        pr: 2,
         gap: 2,
         display: 'flex',
         flexFlow: 'column',
-        borderBottom: '1px solid black',
       }}
     >
+      <div sx={{ display: 'flex', gap: 2 }}>
+        <Badge
+          styles={{ backgroundColor: incomingTransaction ? 'mint' : 'red' }}
+        >
+          <div sx={{ display: 'flex' }}>
+            {incomingTransaction ? '+' : '-'}
+            <IOTABalance
+              styles={{ fontSize: 0 }}
+              balance={transaction.amount}
+            />
+          </div>
+        </Badge>
+
+        {transaction.ledgerInclusionState && (
+          <Badge
+            styles={{
+              backgroundColor:
+                transaction.ledgerInclusionState === 'conflicting'
+                  ? 'orange'
+                  : transaction.ledgerInclusionState === 'noTransaction' ||
+                    transaction.ledgerInclusionState === 'pending'
+                  ? 'black'
+                  : 'mint',
+            }}
+          >
+            {' '}
+            {transaction.ledgerInclusionState}
+          </Badge>
+        )}
+      </div>
+
       <TransactionAddress
         isDevNet={isDevNet}
         type={incomingTransaction ? 'from' : 'to'}
@@ -118,32 +165,6 @@ const Transaction = ({ transaction, isDevNet }: TransactionProps) => {
         messageId={transaction.messageId}
         isDevNet={isDevNet}
       />
-
-      <div sx={{ display: 'flex', gap: 2 }}>
-        <Badge
-          styles={{ backgroundColor: incomingTransaction ? 'mint' : 'red' }}
-        >
-          {incomingTransaction ? '+ ' : '- '}
-          {(transaction.amount / 1000000).toFixed(2)} Mi
-        </Badge>
-
-        {transaction.ledgerInclusionState && (
-          <Badge
-            styles={{
-              backgroundColor:
-                transaction.ledgerInclusionState === 'conflicting'
-                  ? 'yellow'
-                  : transaction.ledgerInclusionState === 'noTransaction' ||
-                    transaction.ledgerInclusionState === 'pending'
-                  ? 'black'
-                  : 'mint',
-            }}
-          >
-            {' '}
-            {transaction.ledgerInclusionState}
-          </Badge>
-        )}
-      </div>
     </div>
   );
 };
@@ -156,16 +177,14 @@ const OpenHistory = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <Screen>
-      <NavBarWrapper>
-        <div sx={{ display: 'flex', gap: 2 }}>
-          <GoBack onClick={onClose} />
-          <h1 sx={accountNameStyles}>{walletName}</h1>
-        </div>
+      <NavBarWrapper onClose={onClose}>
         <Settings />
       </NavBarWrapper>
       <Error error={error} />
-      <h1>Transaction history</h1>
-      <div sx={{ overflow: 'auto' }}>
+
+      <div
+        sx={{ overflow: 'auto', display: 'flex', flexFlow: 'column', gap: 3 }}
+      >
         {transactionHistory.length === 0 && <p>Nothing here yet</p>}
         {fold3<Error, boolean, JSX.Element>(
           () => <p>Loading...</p>,

@@ -7,6 +7,7 @@ import { useWalletContext } from '../../contexts/walletContext';
 import Button from '../Button';
 import Screen from '../Screen/Screen';
 import Copy from '../icons/Copy';
+import NavBarWrapper from '../NavBarWrapper';
 
 type DeleteWalletProps = {
   onClose: () => void;
@@ -19,7 +20,8 @@ const DeleteWallet = ({ onClose }: DeleteWalletProps) => {
   if (!isLoggedIn) return <></>;
 
   return (
-    <Screen styles={{ justifyContent: 'center' }}>
+    <Screen>
+      <NavBarWrapper onClose={onClose} />
       <h1>Are you sure you want to delete the wallet "{walletName}"?</h1>
       <Button
         styles={{
